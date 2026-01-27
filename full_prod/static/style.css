@@ -1,0 +1,29 @@
+body {
+    background: #1e1e2f;
+    color: white;
+    font-family: Arial;
+}
+
+.container {
+    margin: 50px auto;
+    width: 60%;
+    text-align: center;
+}
+
+input[type="file"] {
+    margin: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.images {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESRGAN Image Upscaler</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Image Upscaling (ESRGAN)</h1>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <button type="submit">Upscale</button>
+        </form>
+
+        {% if input_image %}
+        <div class="images">
+            <div>
+                <h3>Original</h3>
+                <img src="/{{ input_image }}" width="300">
+            </div>
+
+            <div>
+                <h3>Upscaled</h3>
+                <img src="/{{ output_image }}" width="300">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
