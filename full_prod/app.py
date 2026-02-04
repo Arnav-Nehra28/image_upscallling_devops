@@ -1,40 +1,59 @@
 import os
-
-# Resolve OpenMP/MKL runtime conflicts on Windows by setting threading
-# layer before importing libraries that may load OpenMP (numpy, torch, cv2).
-# Prefer MKL using the GNU threading layer to avoid duplicate runtimes.
-os.environ.setdefault("MKL_THREADING_LAYER", "GNU")
-# Unsafe fallback to allow duplicate OpenMP libraries if needed.
-os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
-
-from flask import Flask, render_template, request
-from esrgan_inference import ESRGANUpscaler
+import requests
+from flask import Flask, render_template, request, send_file
 
 app = Flask(__name__)
 
-model = ESRGANUpscaler("model/RealESRGAN_x4plus.pth")
+ML_URL = os.environ.get("ML_URL", "http://127.0.0.1:8001/upscale")
 
-@app.route("/")
+UPLOAD_DIR = "static/uploads"
+OUTPUT_DIR = "static/outputs"
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
+
 @app.route("/upload", methods=["POST"])
 def upload():
+    # 🔴 FIX: accept "file" (matches your HTML)
     if "file" not in request.files:
-        return "No file selected"
+        return "No image uploaded", 400
 
-    file = request.files["file"]
+    image = request.files["file"]
 
-    if file.filename == "":
-        return "No file selected"
+    if image.filename == "":
+        return "Empty filename", 400
 
-    input_path = "static/uploaded/input.png"
-    file.save(input_path)
+    input_path = os.path.join(UPLOAD_DIR, image.filename)
+    output_path = os.path.join(OUTPUT_DIR, image.filename)
 
-    output_path, elapsed = model.upscale(input_path)
+    image.save(input_path)
 
-    return render_template("index.html", input_image=input_path, output_image=output_path, elapsed=elapsed)
+    # Send to ML (running locally on your machine)
+    with open(input_path, "rb") as f:
+        r = requests.post(
+            ML_URL,
+            files={"file": f},
+            timeout=300
+        )
+
+    if r.status_code != 200:
+        return f"ML error: {r.text}", 500
+
+    with open(output_path, "wb") as f:
+        f.write(r.content)
+
+    return render_template(
+        "index.html",
+        input_image=f"/{input_path}",
+        output_image=f"/{output_path}",
+    )
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

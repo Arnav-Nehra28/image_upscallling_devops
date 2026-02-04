@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+venv/
+ml_runtime/
+
+static/uploaded/
+.env
+.git
+.gitignore

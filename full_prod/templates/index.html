@@ -1,32 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ESRGAN Image Upscaler</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>AI Image Upscaler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-
 <body>
-    <div class="container">
-        <h1>Image Upscaling (ESRGAN)</h1>
 
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required>
-            <button type="submit">Upscale</button>
-        </form>
+<div class="container">
+    <header>
+        <h1>AI Image Upscaler</h1>
+        <p>Enhance your images using Real-ESRGAN</p>
+    </header>
 
-        {% if input_image %}
-        <div class="images">
-            <div>
-                <h3>Original</h3>
-                <img src="/{{ input_image }}" width="300">
-            </div>
+    <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-box">
+        <label class="drop-zone">
+            <input type="file" name="file" accept="image/*" required onchange="previewImage(event)">
+            <span>📤 Drag & drop an image<br>or click to upload</span>
+        </label>
 
-            <div>
-                <h3>Upscaled</h3>
-                <img src="/{{ output_image }}" width="300">
-            </div>
+        <!-- PREVIEW BEFORE UPLOAD -->
+        <div id="preview-container" style="display:none;">
+            <h3>Selected Image</h3>
+            <img id="preview" style="max-width:100%; border-radius:12px;">
         </div>
-        {% endif %}
-    </div>
+
+        <button type="submit">Upscale Image</button>
+    </form>
+
+    {% if input_image and output_image %}
+    <section class="results">
+        <div class="image-card">
+            <h3>Original</h3>
+            <img src="{{ input_image }}">
+        </div>
+
+        <div class="image-card">
+            <h3>Upscaled</h3>
+            <img src="{{ output_image }}">
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<footer>
+    <p>Powered by Real-ESRGAN • Built with Flask</p>
+</footer>
+
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const preview = document.getElementById("preview");
+    const container = document.getElementById("preview-container");
+
+    preview.src = URL.createObjectURL(file);
+    container.style.display = "block";
+}
+</script>
+
 </body>
 </html>

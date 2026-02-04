@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Uploaded images
+full_prod/static/uploaded/
+
+# Local ML runtime
+ml_runtime/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Helm temp
+*.tgz
