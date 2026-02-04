@@ -2,15 +2,15 @@ name: CI - Image Upscaling
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: ghcr.io/arnav-nehra28/image-upscaling
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      packages: write
 
     steps:
       - name: Checkout code
@@ -27,8 +27,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: ./full_prod
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/image-upscaling:${{ github.run_id }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.run_id }}
+            ${{ env.IMAGE_NAME }}:latest
