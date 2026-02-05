@@ -2,7 +2,7 @@ replicaCount: 5
 
 image:
   repository: ghcr.io/arnav-nehra28/image-upscaling
-  tag: "21715911633"
+  tag: "21716664140"
   pullPolicy: IfNotPresent
 
 service:
