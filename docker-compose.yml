@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ml-backend:
+    build:
+      context: ./ml_backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./ml_backend/model:/app/model
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ML_URL=http://ml-backend:8000/upscale
+    depends_on:
+      - ml-backend
+    volumes:
+      - ./frontend/static/uploads:/app/static/uploads
+      - ./frontend/static/outputs:/app/static/outputs
